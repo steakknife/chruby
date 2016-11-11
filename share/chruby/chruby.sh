@@ -20,7 +20,7 @@ function chruby_detect_rubies()
 function chruby_stable_version_sort() {
 	local dir ruby engine ver old_ver v0 v1 v2 v3 v4
 	sort | uniq | while read -r dir; do
-		ruby="${dir##*/}"; engine="${ruby%%-*}"; version="${ruby#*-}"
+		ruby="${dir##*/}"; engine="${ruby%%-*}"; ver="${ruby#*-}"
 		v0="${ver%%\.*}"; ver="${ver#*\.}"
 		v1="${ver%%\.*}"; old_ver="$ver"; ver="${ver#*\.}"
 		[[ "$ver" == "$old_ver" ]] && ver=""
