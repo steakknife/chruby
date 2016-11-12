@@ -18,9 +18,11 @@ function chruby_detect_rubies()
 }
 
 function chruby_stable_version_sort() {
-	local dir ruby engine ver old_ver v0 v1 v2 v3 v4
-	sort | uniq | while read -r dir; do
+	local dir last_engine ruby engine_no=0 engine ver old_ver v0 v1 v2 v3 v4
+	sort -u | while read -r dir; do
+		last_engine="$engine"
 		ruby="${dir##*/}"; engine="${ruby%%-*}"; ver="${ruby#*-}"
+		[[ "$last_engine" != "$engine" ]] && engine_no=$((engine_no + 1))
 		v0="${ver%%\.*}"; ver="${ver#*\.}"
 		v1="${ver%%\.*}"; old_ver="$ver"; ver="${ver#*\.}"
 		[[ "$ver" == "$old_ver" ]] && ver=""
@@ -30,8 +32,8 @@ function chruby_stable_version_sort() {
 		[[ "$ver" == "$old_ver" ]] && ver=""
 		v4="${v2#*-p}"
 		[[ "$v2" == "$v4" ]] && v4=""
-		echo "$engine:$v0:$v1:$v2:$v3:$v4:$dir"
-	done | sort -n -t: -k1,1 -k2,2 -k3,3 -k4,4 -k5,5 -k6,6 | cut -d: -f7-
+		echo "$engine_no:$v0:$v1:$v2:$v3:$v4:$dir"
+	done | sort -nt: -k1 -k2 -k3 -k4 -k5 -k6 | cut -d: -f7-
 }
 
 function chruby_detect_all_rubies()
