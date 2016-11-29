@@ -29,5 +29,15 @@ if [[ -n "$ZSH_VERSION" ]]; then
 		preexec_functions+=("chruby_auto")
 	fi
 elif [[ -n "$BASH_VERSION" ]]; then
-	trap '[[ "$BASH_COMMAND" != "$PROMPT_COMMAND" ]] && chruby_auto' DEBUG
+  CHRUBY_AUTO_TRAP='[[ "$BASH_COMMAND" != "$PROMPT_COMMAND" ]] && chruby_auto'
+  if [[ "$(trap -p DEBUG)" =~ DEBUG ]]; then
+    if ! [[ "$(trap -p DEBUG)" =~ "$CHRUBY_AUTO_TRAP" ]]; then
+      unset CHRUBY_AUTO_TRAP
+      echo 'chruby/auto.sh cannot be installed - DEBUG trap already set' >&2
+      return 1
+    fi
+  else
+    trap "$CHRUBY_AUTO_TRAP" DEBUG
+    unset CHRUBY_AUTO_TRAP
+  fi
 fi
